@@ -1378,8 +1378,10 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 		$attachments_url = add_query_arg( 'parent', self::$post_id, $attachments_url );
 		$this->assertEquals( $attachments_url, $links['https://api.w.org/attachment'][0]['href'] );
 
-		$term_links = $links['https://api.w.org/term'];
-		$tag_link   = $cat_link = $format_link = null;
+		$term_links  = $links['https://api.w.org/term'];
+		$tag_link    = null;
+		$cat_link    = null;
+		$format_link = null;
 		foreach ( $term_links as $link ) {
 			if ( 'post_tag' === $link['attributes']['taxonomy'] ) {
 				$tag_link = $link;
@@ -2489,7 +2491,7 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 	}
 
 	public function revoke_assign_term( $caps, $cap, $user_id, $args ) {
-		if ( 'assign_term' === $cap && isset( $args[0] ) && $this->forbidden_cat == $args[0] ) {
+		if ( 'assign_term' === $cap && isset( $args[0] ) && $this->forbidden_cat === $args[0] ) {
 			$caps = array( 'do_not_allow' );
 		}
 		return $caps;
@@ -3916,6 +3918,12 @@ class WP_Test_REST_Posts_Controller extends WP_Test_REST_Post_Type_Controller_Te
 	public function test_author_action_ldo_not_registered_for_post_types_without_author_support() {
 
 		remove_post_type_support( 'post', 'author' );
+
+		// Re-initialize the controller to cache-bust schemas from prior test runs.
+		$GLOBALS['wp_rest_server']->override_by_default = true;
+		$controller                                     = new WP_REST_Posts_Controller( 'post' );
+		$controller->register_routes();
+		$GLOBALS['wp_rest_server']->override_by_default = false;
 
 		$response = rest_get_server()->dispatch( new WP_REST_Request( 'OPTIONS', '/wp/v2/posts' ) );
 		$data     = $response->get_data();

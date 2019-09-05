@@ -1219,7 +1219,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			return true;
 		}
 
-		/* translators: 1: parameter, 2: list of valid values */
+		/* translators: 1: Parameter, 2: List of valid values. */
 		return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not one of %2$s.' ), 'template', implode( ', ', array_keys( $allowed_templates ) ) ) );
 	}
 
@@ -1579,7 +1579,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		}
 
 		if ( in_array( 'template', $fields, true ) ) {
-			if ( $template = get_page_template_slug( $post->ID ) ) {
+			$template = get_page_template_slug( $post->ID );
+			if ( $template ) {
 				$data['template'] = $template;
 			} else {
 				$data['template'] = '';
@@ -1612,18 +1613,23 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 
 		$post_type_obj = get_post_type_object( $post->post_type );
 		if ( is_post_type_viewable( $post_type_obj ) && $post_type_obj->public ) {
+			$permalink_template_requested = in_array( 'permalink_template', $fields, true );
+			$generated_slug_requested     = in_array( 'generated_slug', $fields, true );
 
-			if ( ! function_exists( 'get_sample_permalink' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/post.php';
-			}
+			if ( $permalink_template_requested || $generated_slug_requested ) {
+				if ( ! function_exists( 'get_sample_permalink' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/post.php';
+				}
 
-			$sample_permalink = get_sample_permalink( $post->ID, $post->post_title, '' );
+				$sample_permalink = get_sample_permalink( $post->ID, $post->post_title, '' );
 
-			if ( in_array( 'permalink_template', $fields, true ) ) {
-				$data['permalink_template'] = $sample_permalink[0];
-			}
-			if ( in_array( 'generated_slug', $fields, true ) ) {
-				$data['generated_slug'] = $sample_permalink[1];
+				if ( $permalink_template_requested ) {
+					$data['permalink_template'] = $sample_permalink[0];
+				}
+
+				if ( $generated_slug_requested ) {
+					$data['generated_slug'] = $sample_permalink[1];
+				}
 			}
 		}
 
@@ -1747,7 +1753,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		}
 
 		// If we have a featured media, add that.
-		if ( $featured_media = get_post_thumbnail_id( $post->ID ) ) {
+		$featured_media = get_post_thumbnail_id( $post->ID );
+		if ( $featured_media ) {
 			$image_url = rest_url( 'wp/v2/media/' . $featured_media );
 
 			$links['https://api.w.org/featuredmedia'] = array(
@@ -1863,6 +1870,9 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 	 * @return array Item schema data.
 	 */
 	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
 
 		$schema = array(
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
@@ -2206,7 +2216,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		foreach ( $taxonomies as $taxonomy ) {
 			$base                          = ! empty( $taxonomy->rest_base ) ? $taxonomy->rest_base : $taxonomy->name;
 			$schema['properties'][ $base ] = array(
-				/* translators: %s: taxonomy name */
+				/* translators: %s: Taxonomy name. */
 				'description' => sprintf( __( 'The terms assigned to the object in the %s taxonomy.' ), $taxonomy->name ),
 				'type'        => 'array',
 				'items'       => array(
@@ -2222,7 +2232,8 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			$schema['links'] = $schema_links;
 		}
 
-		return $this->add_additional_fields_schema( $schema );
+		$this->schema = $schema;
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 
 	/**
@@ -2308,9 +2319,9 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		foreach ( $taxonomies as $tax ) {
 			$tax_base = ! empty( $tax->rest_base ) ? $tax->rest_base : $tax->name;
 
-			/* translators: %s: taxonomy name */
+			/* translators: %s: Taxonomy name. */
 			$assign_title = sprintf( __( 'The current user can assign terms in the %s taxonomy.' ), $tax->name );
-			/* translators: %s: taxonomy name */
+			/* translators: %s: Taxonomy name. */
 			$create_title = sprintf( __( 'The current user can create terms in the %s taxonomy.' ), $tax->name );
 
 			$links[] = array(
@@ -2500,7 +2511,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			$base = ! empty( $taxonomy->rest_base ) ? $taxonomy->rest_base : $taxonomy->name;
 
 			$query_params[ $base ] = array(
-				/* translators: %s: taxonomy name */
+				/* translators: %s: Taxonomy name. */
 				'description' => sprintf( __( 'Limit result set to all items that have the specified term assigned in the %s taxonomy.' ), $base ),
 				'type'        => 'array',
 				'items'       => array(
@@ -2510,7 +2521,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 			);
 
 			$query_params[ $base . '_exclude' ] = array(
-				/* translators: %s: taxonomy name */
+				/* translators: %s: Taxonomy name. */
 				'description' => sprintf( __( 'Limit result set to all items except those that have the specified term assigned in the %s taxonomy.' ), $base ),
 				'type'        => 'array',
 				'items'       => array(

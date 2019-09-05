@@ -64,7 +64,7 @@ function post_submit_meta_box( $post, $args = array() ) {
 		$preview_button = sprintf(
 			'%1$s<span class="screen-reader-text"> %2$s</span>',
 			$preview_button_text,
-			/* translators: accessibility text */
+			/* translators: Accessibility text. */
 			__( '(opens in a new tab)' )
 		);
 		?>
@@ -198,18 +198,18 @@ function post_submit_meta_box( $post, $args = array() ) {
 	$datef = __( 'M j, Y @ H:i' );
 	if ( 0 != $post->ID ) {
 		if ( 'future' == $post->post_status ) { // scheduled for publishing at a future date
-			/* translators: Post date information. %s: Date on which the post is currently scheduled to be published */
+			/* translators: Post date information. %s: Date on which the post is currently scheduled to be published. */
 			$stamp = __( 'Scheduled for: <b>%s</b>' );
 		} elseif ( 'publish' == $post->post_status || 'private' == $post->post_status ) { // already published
-			/* translators: Post date information. %s: Date on which the post was published */
+			/* translators: Post date information. %s: Date on which the post was published. */
 			$stamp = __( 'Published on: <b>%s</b>' );
 		} elseif ( '0000-00-00 00:00:00' == $post->post_date_gmt ) { // draft, 1 or more saves, no date specified
 			$stamp = __( 'Publish <b>immediately</b>' );
 		} elseif ( time() < strtotime( $post->post_date_gmt . ' +0000' ) ) { // draft, 1 or more saves, future date specified
-			/* translators: Post date information. %s: Date on which the post is to be published */
+			/* translators: Post date information. %s: Date on which the post is to be published. */
 			$stamp = __( 'Schedule for: <b>%s</b>' );
 		} else { // draft, 1 or more saves, date specified
-			/* translators: Post date information. %s: Date on which the post is to be published */
+			/* translators: Post date information. %s: Date on which the post is to be published. */
 			$stamp = __( 'Publish on: <b>%s</b>' );
 		}
 		$date = date_i18n( $datef, strtotime( $post->post_date ) );
@@ -222,7 +222,7 @@ function post_submit_meta_box( $post, $args = array() ) {
 		?>
 <div class="misc-pub-section misc-pub-revisions">
 		<?php
-		/* translators: Post revisions heading. %s: The number of available revisions */
+		/* translators: Post revisions heading. %s: The number of available revisions. */
 		printf( __( 'Revisions: %s' ), '<b>' . number_format_i18n( $args['args']['revisions_count'] ) . '</b>' );
 		?>
 	<a class="hide-if-no-js" href="<?php echo esc_url( get_edit_post_link( $args['args']['revision_id'] ) ); ?>"><span aria-hidden="true"><?php _ex( 'Browse', 'revisions' ); ?></span> <span class="screen-reader-text"><?php _e( 'Browse revisions' ); ?></span></a>
@@ -248,7 +248,7 @@ endif;
 		<p>
 			<?php
 			echo sprintf(
-				/* translators: %s: URL to the Customizer */
+				/* translators: %s: URL to the Customizer. */
 				__( 'This draft comes from your <a href="%s">unpublished customization changes</a>. You can edit, but there&#8217;s no need to publish now. It will be published automatically with those changes.' ),
 				esc_url(
 					add_query_arg(
@@ -369,11 +369,11 @@ function attachment_submit_meta_box( $post ) {
 				__( 'M j, Y @ H:i' ),
 				strtotime( $post->post_date )
 			);
-							printf(
-								/* translators: Attachment information. %s: Date the attachment was uploaded */
-								__( 'Uploaded on: %s' ),
-								'<b>' . $date . '</b>'
-							);
+			printf(
+				/* translators: Attachment information. %s: Date the attachment was uploaded. */
+				__( 'Uploaded on: %s' ),
+				'<b>' . $date . '</b>'
+			);
 		?>
 		</span>
 	</div><!-- .misc-pub-section -->
@@ -492,9 +492,9 @@ function post_tags_meta_box( $post, $box ) {
 	} else {
 		$args = $box['args'];
 	}
-	$r                     = wp_parse_args( $args, $defaults );
-	$tax_name              = esc_attr( $r['taxonomy'] );
-	$taxonomy              = get_taxonomy( $r['taxonomy'] );
+	$parsed_args           = wp_parse_args( $args, $defaults );
+	$tax_name              = esc_attr( $parsed_args['taxonomy'] );
+	$taxonomy              = get_taxonomy( $parsed_args['taxonomy'] );
 	$user_can_assign_terms = current_user_can( $taxonomy->cap->assign_terms );
 	$comma                 = _x( ',', 'tag delimiter' );
 	$terms_to_edit         = get_terms_to_edit( $post->ID, $tax_name );
@@ -555,9 +555,9 @@ function post_categories_meta_box( $post, $box ) {
 	} else {
 		$args = $box['args'];
 	}
-	$r        = wp_parse_args( $args, $defaults );
-	$tax_name = esc_attr( $r['taxonomy'] );
-	$taxonomy = get_taxonomy( $r['taxonomy'] );
+	$parsed_args = wp_parse_args( $args, $defaults );
+	$tax_name    = esc_attr( $parsed_args['taxonomy'] );
+	$taxonomy    = get_taxonomy( $parsed_args['taxonomy'] );
 	?>
 	<div id="taxonomy-<?php echo $tax_name; ?>" class="categorydiv">
 		<ul id="<?php echo $tax_name; ?>-tabs" class="category-tabs">
@@ -592,7 +592,7 @@ function post_categories_meta_box( $post, $box ) {
 			<div id="<?php echo $tax_name; ?>-adder" class="wp-hidden-children">
 				<a id="<?php echo $tax_name; ?>-add-toggle" href="#<?php echo $tax_name; ?>-add" class="hide-if-no-js taxonomy-add-new">
 					<?php
-						/* translators: %s: add new taxonomy label */
+						/* translators: %s: Add New taxonomy label. */
 						printf( __( '+ %s' ), $taxonomy->labels->add_new_item );
 					?>
 				</a>
@@ -663,9 +663,9 @@ function post_excerpt_meta_box( $post ) {
 <p>
 	<?php
 	printf(
-		/* translators: %s: Codex URL */
+		/* translators: %s: Documentation URL. */
 		__( 'Excerpts are optional hand-crafted summaries of your content that can be used in your theme. <a href="%s">Learn more about manual excerpts</a>.' ),
-		__( 'https://codex.wordpress.org/Excerpt' )
+		__( 'https://wordpress.org/support/article/excerpt/' )
 	);
 	?>
 </p>
@@ -700,9 +700,9 @@ function post_trackback_meta_box( $post ) {
 <p>
 	<?php
 	printf(
-		/* translators: %s: Codex URL */
+		/* translators: %s: Documentation URL. */
 		__( 'Trackbacks are a way to notify legacy blog systems that you&#8217;ve linked to them. If you link other WordPress sites, they&#8217;ll be notified automatically using <a href="%s">pingbacks</a>, no other action necessary.' ),
-		__( 'https://codex.wordpress.org/Introduction_to_Blogging#Managing_Comments' )
+		__( 'https://wordpress.org/support/article/introduction-to-blogging/#comments' )
 	);
 	?>
 </p>
@@ -737,9 +737,9 @@ function post_custom_meta_box( $post ) {
 <p>
 	<?php
 	printf(
-		/* translators: %s: Codex URL */
+		/* translators: %s: Documentation URL. */
 		__( 'Custom fields can be used to add extra metadata to a post that you can <a href="%s">use in your theme</a>.' ),
-		__( 'https://codex.wordpress.org/Using_Custom_Fields' )
+		__( 'https://wordpress.org/support/article/custom-fields/' )
 	);
 	?>
 </p>
@@ -761,9 +761,9 @@ function post_comment_status_meta_box( $post ) {
 	<label for="ping_status" class="selectit"><input name="ping_status" type="checkbox" id="ping_status" value="open" <?php checked( $post->ping_status, 'open' ); ?> />
 		<?php
 		printf(
-			/* translators: %s: Codex URL */
+			/* translators: %s: Documentation URL. */
 			__( 'Allow <a href="%s">trackbacks and pingbacks</a> on this page' ),
-			__( 'https://codex.wordpress.org/Introduction_to_Blogging#Managing_Comments' )
+			__( 'https://wordpress.org/support/article/introduction-to-blogging/#managing-comments' )
 		);
 		?>
 	</label>
@@ -775,7 +775,7 @@ function post_comment_status_meta_box( $post ) {
 	 *
 	 * @param WP_Post $post WP_Post object of the current post.
 	 */
-	do_action( 'post_comment_status_meta_box-options', $post );
+	do_action( 'post_comment_status_meta_box-options', $post );  // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 	?>
 </p>
 	<?php
@@ -1026,9 +1026,15 @@ function link_submit_meta_box( $link ) {
 <div id="delete-action">
 	<?php
 	if ( ! empty( $_GET['action'] ) && 'edit' == $_GET['action'] && current_user_can( 'manage_links' ) ) {
-		?>
-	<a class="submitdelete deletion" href="<?php echo wp_nonce_url( "link.php?action=delete&amp;link_id=$link->link_id", 'delete-bookmark_' . $link->link_id ); ?>" onclick="if ( confirm('<?php echo esc_js( sprintf( __( "You are about to delete this link '%s'\n  'Cancel' to stop, 'OK' to delete." ), $link->link_name ) ); ?>') ) {return true;}return false;"><?php _e( 'Delete' ); ?></a>
-<?php } ?>
+		printf(
+			'<a class="submitdelete deletion" href="%s" onclick="return confirm( \'%s\' );">%s</a>',
+			wp_nonce_url( "link.php?action=delete&amp;link_id=$link->link_id", 'delete-bookmark_' . $link->link_id ),
+			/* translators: %s: Link name. */
+			esc_js( sprintf( __( "You are about to delete this link '%s'\n  'Cancel' to stop, 'OK' to delete." ), $link->link_name ) ),
+			__( 'Delete' )
+		);
+	}
+	?>
 </div>
 
 <div id="publishing-action">
@@ -1310,12 +1316,12 @@ function link_advanced_meta_box( $link ) {
 		<th scope="row"><label for="link_rating"><?php _e( 'Rating' ); ?></label></th>
 		<td><select name="link_rating" id="link_rating" size="1">
 		<?php
-		for ( $r = 0; $r <= 10; $r++ ) {
-			echo '<option value="' . $r . '"';
-			if ( isset( $link->link_rating ) && $link->link_rating == $r ) {
+		for ( $parsed_args = 0; $parsed_args <= 10; $parsed_args++ ) {
+			echo '<option value="' . $parsed_args . '"';
+			if ( isset( $link->link_rating ) && $link->link_rating == $parsed_args ) {
 				echo ' selected="selected"';
 			}
-			echo( '>' . $r . '</option>' );
+			echo( '>' . $parsed_args . '</option>' );
 		}
 		?>
 		</select>&nbsp;<?php _e( '(Leave at 0 for no rating.)' ); ?>
